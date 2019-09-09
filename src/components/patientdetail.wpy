@@ -1,0 +1,75 @@
+<style type="scss">
+    $border: 1px solid #eeeeee;
+    .list {
+        margin-top: 40rpx;
+        background-color: #fff;
+        border-bottom: $border;
+        .item {
+            margin-left: 5rpx;
+            height: auto;
+            position: relative;
+            box-sizing: border-box;
+            padding: 20rpx;
+            border-bottom: $border;
+
+            .title {
+                padding: 18rpx 0 0 5rpx;
+                display: block;
+                font-size: 28rpx;
+            }
+        }
+    }
+</style>
+<template>
+    <view class="list">
+            <view class="item">
+                <text class="title">疾病名称:{{detail.jbmc}}</text>
+            </view>
+            <view class="item">
+                <text class="title">患病时间:{{detail.hbsj}}</text>
+            </view>
+            <view class="item">
+                <text class="title">过敏史:{{detail.gms}}</text>
+            </view>
+            <view class="item">
+                <text class="title">重大疾病、慢性病:{{detail.zdjbmxb}}</text>
+            </view>
+            <view class="item">
+                <text class="title">就诊情况:{{detail.jzqk}}</text>
+            </view>
+            <view class="item">
+                <text class="title">病情描述:{{detail.bqms}}</text>
+            </view>
+    </view>
+</template>
+<script>
+    import wepy from 'wepy';
+
+    export default class PatientDetail extends wepy.component {
+
+        props = {
+            detail: {}
+        }
+        data = {
+        };
+
+        methods = {
+            click (index, item, evt) {
+                console.log('index: ' + index + 'clicked: ' + item.title);
+                if (this.list[index].action) {
+                    this.list[index].action.call(this.$parent);
+                } else {
+                    this.$root.showToast(item.title);
+                }
+            }
+        };
+
+        onLoad () {
+        }
+
+        load(list) {
+            this.list = list;
+            this.$apply();
+        }
+    }
+</script>

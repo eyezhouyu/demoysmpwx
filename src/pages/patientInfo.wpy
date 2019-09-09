@@ -1,0 +1,139 @@
+<style type="scss">
+    $bgcolor: #f0eff5;
+    .me {
+        background-color: $bgcolor;
+        height: 100%;
+        padding-top: 40rpx;
+        .item {
+            background-color: #fff;
+            height: 200rpx;
+            position: absolute;
+            box-sizing: border-box;
+            padding: 15rpx 25rpx;
+            border-bottom: 1px solid #eeeeee;
+            &.info {
+                height: 250rpx;
+                position: relative;
+                .me_icon {
+                    width: 130rpx;
+                    height: 130rpx;
+                    margin-left: 0rpx;
+                    margin-top:50rpx;
+                    border-radius: 65rpx;
+                    position: absolute;
+                }
+                .wechat_info {
+                    padding-left: 150rpx;
+                    padding-top: 25rpx;
+                    .wechat_name {
+                        font-size: 32rpx;
+                    }
+                    .wechat_sex {
+                        height: 50rpx;
+                        margin-top: 20rpx;
+                        color: #333;
+                        font-size: 26rpx;
+                    }
+                    .wechat_city {
+                        margin-top: 20rpx;
+                        color: #333;
+                        font-size: 26rpx;
+                    }
+                }
+            }
+        }
+    }
+</style>
+<template>
+    <view class="me">
+        <view class="info item">
+            <image class="me_icon" src="{{patientInfo.icon}}"></image>
+            <view class="wechat_info">
+                <view class="wechat_name">{{patientInfo.name}}</view>
+                <view class="wechat_sex">{{patientInfo.gender == 1 ? '男':'女'}}</view>
+                <view class="wechat_city">{{patientInfo.address}}</view>
+            </view>
+        </view>
+        <view class="info item">
+            <text class="title">疾病名称:{{hzjbsj.jbmc}}</text>
+        </view>
+        <view class="info item">
+            <text class="title">患病时间:{{hzjbsj.hbsj}}</text>
+        </view>
+        <view class="info item">
+            <text class="title">过敏史:{{hzjbsj.gms}}</text>
+        </view>
+        <view class="info item">
+            <text class="title">重大疾病、慢性病:{{hzjbsj.zdjbmxb}}</text>
+        </view>
+        <view class="info item">
+            <text class="title">就诊情况:{{hzjbsj.jzqk}}</text>
+        </view>
+        <view class="info item">
+            <text class="title">病情描述:{{hzjbsj.bqms}}</text>
+        </view>
+    </view>
+    <view>
+        <button @tap="toMessege({{patientInfo.id}})">发消息</button>
+    </view>
+</template>
+<script>
+    import wepy from 'wepy';
+
+    import api from '../common/api';
+    import global from '../common/global';
+
+    export default class PatientInfo extends wepy.page {
+
+        data = {
+            // userInfo: {
+            //     nickName: 'Gcaufy',
+            //     id: 'gcaufy',
+            //     avatarUrl: wepy.env === 'web' ? './images/myheader.png' : '../images/myheader.png'
+            // },
+            patientInfo:{},
+            hzjbsj:{},
+        }
+
+        methods = {
+            toMessege(id){
+                   // wx.navigateTo({url:'chat?id='+id})
+                   this.$navigate({url: 'chat?id='+id});
+            }
+        };
+
+        onLoad (param) {
+            // this.setUserInfo(param);
+            this.getContact(param);
+            this.getHbsj(param);
+        }
+
+        async getContact(param){
+            let res = await global.getContact(param.id)
+            this.patientInfo = res;
+            this.$apply();
+        }
+
+        async getHbsj(param){
+            let res = await global.getHzhbsj(param.id);
+            this.hzjbsj = res;
+            this.$apply();
+        }
+
+        // async setUserInfo() {
+        //     let res;
+        //     try {
+        //         res = await api.getUserInfo();
+        //     } catch (e) {
+        //         res = this.userInfo;
+        //     }
+        //     ['nickName', 'avatarUrl','gender','province','city'].forEach((v) => this.userInfo[v] = res[v]);
+        //     this.$apply();
+        // }
+
+        async clearHistory (id) {
+            await api.clearMsg(id);
+            this.$root.$navigate({url: 'index'});
+        }
+    }
+</script>

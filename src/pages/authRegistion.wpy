@@ -1,0 +1,92 @@
+<style lang="less">
+    page {
+        height: 100%;
+    }
+
+    .authorize-contianer {
+        height: 100%;
+        background: #fff;
+        text-align: center;
+
+        .authorize-icon {
+            width: 100%;
+            height: 92%;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .auth-item {
+            padding: 0rpx 0;
+        }
+
+        .btn-authorize {
+            margin: 0rpx 25rpx 2rpx 25rpx;
+        }
+    }
+</style>
+<template>
+    <view class="authorize-contianer">
+        <image class="authorize-icon" src="../statics/images/flow.jpg"></image>
+        <view class="btn-authorize" >
+            <button open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="getUserInfo">授权</button>
+        </view>
+    </view>
+</template>
+<script>
+    import wepy from 'wepy';
+
+    export default class Register extends wepy.page {
+        data = {
+            userinfo: null
+        };
+
+        methods = {};
+
+        async getUserInfo(e) {
+            if (e.detail.userInfo) {
+                this.userInfo = e.detail.userInfo
+                this.login();
+                wepy.setStorageSync('userInfo', e.detail.userInfo)
+                wepy.navigateTo({ url: './index' });
+            }
+        };
+
+        async login(){
+            try{
+                let token = wepy.getStorageSync('token') || '';
+
+                // let {code:code} = await wepy.login();
+                let loginData = await wepy.login()
+
+                let userInfo = await wepy.getUserInfo()
+                console.info(userInfo.UnionID+"************UnionID************")
+                if(loginData.code){
+                    wepy.request({
+                        url:'http://localhost:8080/usr/wxlogin',
+                        method:'POST',
+                        data: {
+                          'code': loginData.code,
+                          'encryptedData':userInfo.encryptedData,
+                          'iv':userInfo.iv
+                        }
+                    }).then((res=>{
+                        console.info(res)
+                         let response = res.data;
+                    }))
+                }
+
+            }catch(e){
+                //TODO handle the exception
+            }
+        }
+
+        onLaunch() {
+        }
+
+        onLoad(){}
+        onShow() {
+        }
+        onReady(){}
+
+    }
+</script>

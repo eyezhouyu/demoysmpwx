@@ -1,0 +1,132 @@
+<style type="scss">
+    $bgcolor: #f0eff5;
+    .me {
+        height: 100%;
+        padding-top: 40rpx;
+        .item {
+            height: 100%;
+            position: relative;
+            box-sizing: border-box;
+            padding: 15rpx 25rpx;
+            border-bottom: 1px solid #eeeeee;
+            &.info {
+                height: 100%;
+                position: relative;
+                .me_icon {
+                    width: 200rpx;
+                    height: 200rpx;
+                    margin-left: 245rpx;
+                    border-radius: 115rpx;
+                    position: absolute;
+                }
+                .qr_code {
+                    position: absolute;
+                    margin-left: 245rpx;
+                    margin-top: 700rpx;
+                    width: 200rpx;
+                    height: 200rpx;
+                }
+                .nick_name {
+                    position: absolute;
+                    margin-left: 300rpx;
+                    margin-top: 250rpx;
+                }
+                .position {
+                    position: absolute;
+                    margin-left: 300rpx;
+                    margin-top: 350rpx;
+                }
+                .hospital {
+                    position: absolute;
+                    margin-left: 220rpx;
+                    margin-top: 450rpx;
+                }
+                .label {
+                    position: absolute;
+                    margin-left: 220rpx;
+                    margin-top: 550rpx;
+                }
+            }
+        }
+    }
+</style>
+<template>
+    <view class="me">
+        <view class="info item">
+            <image class="me_icon" src="{{userInfo.avatarUrl}}"></image>
+            <view class="nick_name">{{userInfo.nickName}}</view>
+            <view class="position">{{userInfo.position}}</view>
+            <view class="hospital">{{userInfo.hospital}}</view>
+            <view class="label">{{userInfo.label}}</view>
+            <image class="qr_code" src="../images/qr_code.png"></image>
+        </view>
+    </view>
+</template>
+<script>
+    import wepy from 'wepy';
+
+    // import List from './list';
+    import api from '../common/api';
+
+    export default class Me extends wepy.component {
+
+        components = {
+            // album: List,
+            // emoji: List,
+            // setting: List,
+        }
+
+        data = {
+            userInfo: {
+                nickName: 'Gcaufy',
+                id: 'gcaufy',
+                avatarUrl: wepy.env === 'web' ? './images/myheader.png' : '../images/myheader.png',
+                position:'主任医师',
+                hospital:'上海第一人民医院',
+                label:'专业 热情 医术高超'
+            },
+        //     dAlbum: [
+        //         {icon: wepy.env === 'web' ? './images/album.png' : '../images/album.png', title: '相册'},
+        //         {icon: wepy.env === 'web' ? './images/collect.png' : '../images/collect.png', title: '收藏'},
+        //         {icon: wepy.env === 'web' ? './images/wallet.png' : '../images/wallet.png', title: '钱包'},
+        //         {icon: wepy.env === 'web' ? './images/card.png' : '../images/card.png', title: '卡包'},
+        //     ],
+        //     dSetting: [
+        //         {
+        //             id: 'clear',
+        //             icon: '../images/setting.png',
+        //             title: '清除本地聊天记录',
+        //             action() {
+        //                 this.clearHistory();
+        //             }
+        //         }
+        //     ],
+        //     dEmoji: [{icon: wepy.env === 'web' ? './images/emoji.png' : '../images/emoji.png', title: '表情'}],
+        //
+        };
+
+        methods = {
+        };
+
+        onLoad () {
+            // this.setUserInfo();
+        }
+
+        async setUserInfo() {
+            let res;
+            try {
+                res = await api.getUserInfo();
+            } catch (e) {
+                res = this.userInfo;
+            }
+
+            ['nickName', 'avatarUrl'].forEach((v) => this.userInfo[v] = res[v]);
+            this.$apply();
+        }
+
+        async clearHistory (id) {
+            await api.clearMsg(id);
+            this.$root.$navigate({url: 'index'});
+        }
+    }
+</script>

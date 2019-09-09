@@ -1,0 +1,110 @@
+<style type='scss'>
+body {
+    margin: 0px;
+    padding: 0px;
+    background-color: #f0eff5;
+}
+</style>
+
+<script>
+
+import wepy from 'wepy';
+import 'wepy-async-function';
+
+export default class extends wepy.app {
+
+
+    config = {
+        'pages': [
+            'pages/index',
+            'pages/chat',
+            'pages/patientInfo',
+            'pages/authRegistion'
+        ],
+        'window': {
+            'backgroundTextStyle': 'light',
+            'navigationBarBackgroundColor': '#3b3a40',
+            'navigationBarTitleText': 'WeChat',
+            'navigationBarTextStyle': 'black'
+        }
+    }
+
+    constructor () {
+        super();
+        this.use('promisify');
+        this.use('requestfix');
+    }
+
+    globalData = {
+        userInfo: null
+    }
+
+    onLaunch() {
+        this.init();
+    }
+
+    init(){
+        this.checkSettingStatus();
+    }
+
+
+    async checkSettingStatus(){
+        try{
+            let auth = await wepy.getSetting();
+
+
+            let authSetting = auth.authSetting;
+
+
+            console.log('---开始判断---');
+
+            if(authSetting['scope.userInfo']){
+                console.log('---已经授权---');
+
+                let userInfo= await wepy.getUserInfo();
+                this.globalData.ret = userInfo;
+
+                this.login();
+            }else{
+                console.log('---未授权---');
+                wx.navigateTo({url:'authRegistion'});
+            }
+
+        }catch(e){
+            //TODO handle the exception
+        }
+    }
+
+    async getUserInfo() {
+        if (this.globalData.userInfo) {
+            return this.globalData.userInfo;
+        }
+        await wx.login();
+        let res = await wx.getUserInfo();
+        this.globalData.userInfo = res.userInfo;
+        return res.userInfo;
+    }
+
+//     async login(){
+//         try{
+//             let token = wepy.getStorageSync('token') || '';
+//
+//             let {code:code} = await wepy.login();
+//
+//             if(code){
+//
+//                 wepy.request({
+//                     url:'http://localhost:8080/userInfo/wxLogin',
+//                     method:'POST',
+//                     data: {
+//                       'code': res.code,
+//                     }
+//                 })
+//             }
+//
+//         }catch(e){
+//             //TODO handle the exception
+//         }
+//     }
+}
+</script>
