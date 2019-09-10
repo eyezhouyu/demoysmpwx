@@ -83,7 +83,7 @@
     import api from '../common/api';
     import global from '../common/global';
 
-    export default class PatientInfo extends wepy.page {
+    export default class Patientinfo extends wepy.page {
 
         data = {
             // userInfo: {

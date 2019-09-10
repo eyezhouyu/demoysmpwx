@@ -34,6 +34,7 @@
 </template>
 <script>
     import wepy from 'wepy';
+    import global from '../common/global';
 
     export default class Register extends wepy.page {
         data = {
@@ -46,9 +47,9 @@
             if (e.detail.userInfo) {
                 this.userInfo = e.detail.userInfo
                 this.login();
-                wepy.setStorageSync('userInfo', e.detail.userInfo)
-                wepy.navigateTo({ url: './index' });
+                // wepy.setStorageSync('userInfo', e.detail.userInfo)
             }
+            wepy.navigateTo({ url: 'usrregister' });
         };
 
         async login(){
@@ -59,7 +60,6 @@
                 let loginData = await wepy.login()
 
                 let userInfo = await wepy.getUserInfo()
-                console.info(userInfo.UnionID+"************UnionID************")
                 if(loginData.code){
                     wepy.request({
                         url:'http://localhost:8080/usr/wxlogin',
@@ -70,7 +70,11 @@
                           'iv':userInfo.iv
                         }
                     }).then((res=>{
-                        console.info(res)
+                        if(res.statusCode == 200){
+                            wepy.setStorageSync('Auth-Token',res.data.data.token);
+                            wepy.setStorageSync('userInfo',res.data.data);
+                            global.setUserInfo(res.data.data);
+                        }
                          let response = res.data;
                     }))
                 }
@@ -81,9 +85,12 @@
         }
 
         onLaunch() {
+            console.info("ar---------------------")
         }
 
-        onLoad(){}
+        onLoad(){
+            console.info("ar------------*---------")
+        }
         onShow() {
         }
         onReady(){}

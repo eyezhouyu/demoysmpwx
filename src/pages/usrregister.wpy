@@ -19,32 +19,9 @@
                     border-radius: 115rpx;
                     position: absolute;
                 }
-                .qr_code {
-                    position: absolute;
-                    margin-left: 245rpx;
-                    margin-top: 700rpx;
-                    width: 200rpx;
-                    height: 200rpx;
-                }
-                .nick_name {
-                    position: absolute;
-                    margin-left: 300rpx;
-                    margin-top: 250rpx;
-                }
-                .position {
-                    position: absolute;
-                    margin-left: 300rpx;
-                    margin-top: 350rpx;
-                }
-                .hospital {
-                    position: absolute;
-                    margin-left: 220rpx;
-                    margin-top: 450rpx;
-                }
-                .label {
-                    position: absolute;
-                    margin-left: 220rpx;
+                .text_view{
                     margin-top: 550rpx;
+                    margin-left: 245rpx;
                 }
             }
         }
@@ -54,21 +31,21 @@
     <view class="me">
         <view class="info item">
             <image class="me_icon" src="{{userInfo.avatarUrl}}"></image>
-            <view class="nick_name">{{userInfo.nickName}}</view>
-            <view class="position">{{userInfo.position}}</view>
-            <view class="hospital">{{userInfo.hospital}}</view>
-            <view class="label">{{userInfo.label}}</view>
-            <image class="qr_code" src="../images/qr_code.png"></image>
+            <view class="text_view">
+              <picker bindchange="bindUsrTypeChange" range="{{usrType}}" value="{{usrTypeIndex}}">
+                <view class="picker">
+            			用户类型:{{usrType[usrTypeIndex]}}
+                </view>
+              </picker>
+            </view>
         </view>
+        <button type="primary" size="default" bindtap="bindViewTap"> 下一步 </button>
     </view>
 </template>
 <script>
     import wepy from 'wepy';
 
-    // import List from './list';
-    import api from '../common/api';
-
-    export default class Me extends wepy.component {
+    export default class Usrregister extends wepy.page {
 
         components = {
             // album: List,
@@ -77,14 +54,18 @@
         }
 
         data = {
-            userInfo: {
-                nickName: 'Gcaufy',
-                id: 'gcaufy',
-                avatarUrl: wepy.env === 'web' ? './images/myheader.png' : '../images/myheader.png',
-                position:'主任医师',
-                hospital:'上海第一人民医院',
-                label:'专业 热情 医术高超'
+            userInfo:{
             },
+            // userInfo: {
+            //     nickName: 'Gcaufy',
+            //     id: 'gcaufy',
+            //     avatarUrl: wepy.env === 'web' ? './images/myheader.png' : '../images/myheader.png',
+            //     position:'主任医师',
+            //     hospital:'上海第一人民医院',
+            //     label:'专业 热情 医术高超'
+            // },
+            usrTypeIndex:0,
+            usrType:['医生','患者'],
         //     dAlbum: [
         //         {icon: wepy.env === 'web' ? './images/album.png' : '../images/album.png', title: '相册'},
         //         {icon: wepy.env === 'web' ? './images/collect.png' : '../images/collect.png', title: '收藏'},
@@ -106,13 +87,28 @@
         };
 
         methods = {
+
+            bindUsrTypeChange: function(e) {
+              this.usrTypeIndex = e.detail.value;
+            },
+            bindViewTap: function() {
+                if( this.usrTypeIndex == 0 ){
+                    wx.navigateTo({
+                      url: 'doc/doctorinfo'
+                    })
+                }else{
+                    wx.navigateTo({
+                      url: 'pat/patientinfo'
+                    })
+                }
+
+            }
         };
 
         onLoad () {
 			if (wepy.getStorageSync('userInfo')) {
 			  this.userInfo = wepy.getStorageSync('userInfo')
 			}
-            console.info(this.userInfo)
             this.$apply();
             // this.setUserInfo();
         }

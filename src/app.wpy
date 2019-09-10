@@ -18,8 +18,10 @@ export default class extends wepy.app {
         'pages': [
             'pages/index',
             'pages/chat',
-            'pages/patientInfo',
-            'pages/authRegistion'
+            'pages/pat/patientinfo',
+            'pages/doc/doctorinfo',
+            'pages/authRegistion',
+            'pages/usrregister'
         ],
         'window': {
             'backgroundTextStyle': 'light',
@@ -60,14 +62,10 @@ export default class extends wepy.app {
 
             if(authSetting['scope.userInfo']){
                 console.log('---已经授权---');
-
-                let userInfo= await wepy.getUserInfo();
-                this.globalData.ret = userInfo;
-
-                this.login();
+                wepy.navigateTo({url:'usrregister'});
             }else{
                 console.log('---未授权---');
-                wx.navigateTo({url:'authRegistion'});
+                wepy.navigateTo({url:'./authRegistion'});
             }
 
         }catch(e){

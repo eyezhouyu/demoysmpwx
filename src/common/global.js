@@ -47,6 +47,7 @@ export default {
         return this._userInfo;
     },
     setUserInfo (v) {
+        console.info(v.openId+"*****************************gloabl")
         this._userInfo = v;
     }
 

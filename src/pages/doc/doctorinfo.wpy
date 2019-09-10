@@ -53,38 +53,38 @@
 <template>
     <view class="me">
         <view class="info item">
-            <image class="me_icon" src="{{userInfo.avatarUrl}}"></image>
-            <view class="nick_name">{{userInfo.nickName}}</view>
-            <view class="position">{{userInfo.position}}</view>
-            <view class="hospital">{{userInfo.hospital}}</view>
-            <view class="label">{{userInfo.label}}</view>
-            <image class="qr_code" src="../images/qr_code.png"></image>
+            <view class="section">
+                <view class="section">
+                  <input placeholder="所属医院" bindchange="bindHospitalChange" auto-focus/>
+                </view>
+            </view>
+            <view class="section">
+                <view class="section">
+                  <input placeholder="职位" bindchange="bindPositionChange" auto-focus/>
+                </view>
+            </view>
+            <view class="section">
+                <view class="section">
+                  <input placeholder="标签" bindchange="bindLabelChange" auto-focus/>
+                </view>
+            </view>
         </view>
+        <button type="primary" size="default" @tap="save"> 提交 </button>
     </view>
 </template>
 <script>
     import wepy from 'wepy';
+    import global from '../common/global';
 
-    // import List from './list';
-    import api from '../common/api';
-
-    export default class Me extends wepy.component {
-
-        components = {
-            // album: List,
-            // emoji: List,
-            // setting: List,
-        }
+    export default class Doctorinfo extends wepy.page {
 
         data = {
-            userInfo: {
-                nickName: 'Gcaufy',
-                id: 'gcaufy',
-                avatarUrl: wepy.env === 'web' ? './images/myheader.png' : '../images/myheader.png',
-                position:'主任医师',
-                hospital:'上海第一人民医院',
-                label:'专业 热情 医术高超'
-            },
+            userInfo: {},
+            position:'',
+            hospital:'',
+            usrType:'0',
+            label:'',
+            userId:'',
         //     dAlbum: [
         //         {icon: wepy.env === 'web' ? './images/album.png' : '../images/album.png', title: '相册'},
         //         {icon: wepy.env === 'web' ? './images/collect.png' : '../images/collect.png', title: '收藏'},
@@ -106,16 +106,51 @@
         };
 
         methods = {
-        };
+            bindLabelChange:function(e){
+                this.label = e.detail.value;
+                console.info(this.userInfo)
+            },
+            bindPositionChange:function(e){
+                this.position = e.detail.value;
+            },
+            bindHospitalChange: function(e) {
+              this.hospital = e.detail.value;
+            },
+
+            save: function() {
+                if( this.position == '' ||  this.position == ''){
+                    wepy.showModel({
+                        title: '提醒',
+                        content: '请填写医院和职务!'
+                    })
+                    return;
+                }
+
+                wepy.request({
+                    url:'http://localhost:8080/usr/addByUsrType',
+                    method:'POST',
+                    data: {
+                      'usrType': this.usrType,
+                      'hospital':this.hospital,
+                      'label':this.label,
+                      'position':this.position,
+                      'userId':'ssss'
+                    }
+                }).then((res=>{
+                    console.info(res)
+                }))
+            },
+        },
 
         onLoad () {
-			if (wepy.getStorageSync('userInfo')) {
-			  this.userInfo = wepy.getStorageSync('userInfo')
-			}
-            console.info(this.userInfo)
+            this.userInfo = global.getUserInfo();
+            console.info("onload********************"+this.userInfo)
             this.$apply();
             // this.setUserInfo();
-        }
+        },
+        onLaunch() {
+           console.info("------------------")
+        },
 
         // async setUserInfo() {
 //             let res;
